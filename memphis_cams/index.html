@@ -20,7 +20,7 @@
 		location.href = "http://gears.google.com/?action=install&message=To use Traffic Camera Viewer, please follow these instructions" + "&return=http://dev.jk3.us/memphis_cams/";
 
 
-	var camxml = null;
+	var cams = null;
 	var old_url = '';
 	var locs = new Array();
 
@@ -40,21 +40,20 @@
 			bearing =  Math.atan2(locs[2].coords.latitude - position.coords.latitude, locs[2].coords.longitude - position.coords.longitude);
 			$('#position').text(Math.round(position.coords.latitude*10000)/10000 + ', ' + Math.round(position.coords.longitude*10000)/10000 + ' (' + Math.round(bearing*10000)/10000 + ')');
 		}
-		$(camxml).find('entry').each(function() {
-			coords = $(this).find('marker').text().split(' ');
+		$.each(cams, function(i, cam) {
 			// throw out cams behind me here
 			if (bearing != null) {
-				cam_angle =  Math.atan2(position.coords.latitude - coords[0], position.coords.longitude - coords[1]);
+				cam_angle =  Math.atan2(position.coords.latitude - cam.lat, position.coords.longitude - cam.long);
 				diff = bearing - cam_angle;
 				if (diff > Math.PI/4 || diff < Math.PI/-4) {
 					return;
 				}
 			}
-			distance = Math.abs(position.coords.latitude - coords[0]) + Math.abs(position.coords.longitude - coords[1]);
+			distance = Math.abs(position.coords.latitude - cam.lat) + Math.abs(position.coords.longitude - cam.long);
 			if (dist == null || dist > distance) {
 				dist = distance;
-				url = $(this).find('imageurl').text();
-				summary = $(this).find('summary').text();
+				url = cam.u;
+				summary = cam.s;
 			}
 		});
 		if (url != old_url) {
@@ -70,15 +69,15 @@
 		//alert('Attempt to get location failed: ' + positionError.message);
 	}
 
-	$.get("TDOTCameraGeorss.xml", function(data) {
-		camxml = data;
+	$.getJSON("TDOTCameraGeorss.json", function(data) {
+		cams = data;
 		geo.watchPosition(updatePosition, handleError, {enableHighAccuracy: true, maximumAge: 20});
 	});
 
 </script>
 </head>
 <body>
-	<h1>Memphis Cameras</h1>
+	<h1>Tennessee Cameras</h1>
 	<div id="position"></div>
 	<div id="summary">Searching for the Nearest Camera:</div>
 	<img id="cam" src="" alt="Loading..." />
