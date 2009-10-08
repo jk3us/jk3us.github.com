@@ -1,86 +1,10 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title>Memphis Cameras</title>
-<style type="text/css">
-	img#cam {
-		width: 100%;
-		max-width: 320px;
-	}
-</style>
-<script type="text/javascript" src="jquery-1.3.2.min.js"></script>
-<script type="text/javascript" src="gears_init.js"></script>
-<script type="text/javascript">
-	if (navigator.geolocation)
-		var geo = navigator.geolocation;
-	else
-	if (window.google && google.gears)
-		var geo = google.gears.factory.create('beta.geolocation');
-	else
-		location.href = "http://gears.google.com/?action=install&message=To use Traffic Camera Viewer, please follow these instructions" + "&return=http://dev.jk3.us/memphis_cams/";
-
-
-	var cams = null;
-	var old_url = '';
-	var locs = new Array();
-
-	//locs.unshift({coords: {latitude: 35.191030, longitude: -89.966780}});
-	//locs.unshift({coords: {latitude: 35.191329, longitude: -89.969487}});
-	//locs.unshift({coords: {latitude: 35.191618, longitude: -89.974487}});
-
-	function updatePosition(position) {
-		var dist = null;
-		var bearing = null;
-		var url = '';
-		var now = new Date();
-		//position = {coords: {latitude: 35.19190, longitude: -89.97850}};
-		locs.unshift(position);
-		if (locs.length >= 3) {
-			locs = locs.slice(0,3);
-			bearing =  Math.atan2(locs[2].coords.latitude - position.coords.latitude, locs[2].coords.longitude - position.coords.longitude);
-			$('#position').text(Math.round(position.coords.latitude*10000)/10000 + ', ' + Math.round(position.coords.longitude*10000)/10000 + ' (' + Math.round(bearing*10000)/10000 + ')');
-		}
-		$.each(cams, function(i, cam) {
-			// throw out cams behind me here
-			if (bearing != null) {
-				cam_angle =  Math.atan2(position.coords.latitude - cam.lat, position.coords.longitude - cam.long);
-				diff = bearing - cam_angle;
-				if (diff > Math.PI/4 || diff < Math.PI/-4) {
-					return;
-				}
-			}
-			distance = Math.abs(position.coords.latitude - cam.lat) + Math.abs(position.coords.longitude - cam.long);
-			if (dist == null || dist > distance) {
-				dist = distance;
-				url = cam.u;
-				summary = cam.s;
-			}
-		});
-		if (url != old_url) {
-			old_url = url;
-			s = now.getTime();
-			min = s - s%60;
-			$('#cam').attr('src',url+ "?" + min);
-			$('#summary').text(summary);
-		}
-	}
-
-	function handleError(positionError) {
-		//alert('Attempt to get location failed: ' + positionError.message);
-	}
-
-	$.getJSON("TDOTCameraGeorss.json", function(data) {
-		cams = data;
-		geo.watchPosition(updatePosition, handleError, {enableHighAccuracy: true, maximumAge: 20});
-	});
-
-</script>
-</head>
-<body>
-	<h1>Tennessee Cameras</h1>
-	<div id="position"></div>
-	<div id="summary">Searching for the Nearest Camera:</div>
-	<img id="cam" src="" alt="Loading..." />
-	<p>Note: your location is never sent to the server... so I can't track you or anything</p>
-</body>
+<html>
+	<head>
+		<title>Moved</title>
+		<meta http-equiv="refresh" content="3; ../tn_cams/" />
+	</head>
+	<body>
+		<p>Memphis Cameras is now <a href="../tn_cams/">Tennessee Cameras</a>!  All the TDOT cameras across the state will show up as you drive around! You should be forwarded shortly.</p>
+	</body>
 </html>
+
